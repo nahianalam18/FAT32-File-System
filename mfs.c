@@ -223,6 +223,102 @@ void close(char *filename)
   memset(blocks, 0, NUM_BLOCKS * BLOCK_SIZE);
 }
 
+int get(char * source, char*destination)
+
+{
+
+  int    status;                   // Hold the status of all return values.
+  struct stat buf;                 // stat struct to hold the returns from the stat call
+
+  // Call stat with out input filename to verify that the file exists.  It will also 
+  // allow us to get the file size. We also get interesting file system info about the
+  // file such as inode number, block size, and number of blocks.  For now, we don't 
+  // care about anything but the filesize.
+  status =  stat( source, &buf ); 
+
+  int i;
+
+  for(i = 0; i < NUM_FILES ; i++)
+  {
+    if(strcmp(dir[i].name,source)== 0)
+      break;
+  }
+
+  printf("The file I am about to get from the file system is %s\n",dir[i].name);
+
+
+
+
+
+  // If stat did not return -1 then we know the input file exists and we can use it.
+  // if( status != -1 )
+  // {
+  FILE *ofp;
+    ofp = fopen(destination, "w");
+
+    if( ofp == NULL )
+    {
+      printf("Could not open output file: %s\n", destination );
+      perror("Opening output file returned");
+      return -1;
+    }
+
+    // Initialize our offsets and pointers just we did above when reading from the file.
+    int block_index = 0;
+    int copy_size   = buf . st_size;
+    int offset      = 0;
+
+   printf("Writing %d bytes to %s\n", (int) buf . st_size, destination );
+
+  //   // Using copy_size as a count to determine when we've copied enough bytes to the output file.
+  //   // Each time through the loop, except the last time, we will copy BLOCK_SIZE number of bytes from
+  //   // our stored data to the file fp, then we will increment the offset into the file we are writing to.
+  //   // On the last iteration of the loop, instead of copying BLOCK_SIZE number of bytes we just copy
+  //   // how ever much is remaining ( copy_size % BLOCK_SIZE ).  If we just copied BLOCK_SIZE on the
+  //   // last iteration we'd end up with gibberish at the end of our file. 
+    while( copy_size > 0 )
+    { 
+
+      int num_bytes;
+
+      // If the remaining number of bytes we need to copy is less than BLOCK_SIZE then
+      // only copy the amount that remains. If we copied BLOCK_SIZE number of bytes we'd
+      // end up with garbage at the end of the file.
+      if( copy_size < BLOCK_SIZE )
+      {
+        num_bytes = copy_size;
+      }
+      else 
+      {
+        num_bytes = BLOCK_SIZE;
+      }
+
+      // Write num_bytes number of bytes from our data array into our output file.
+      fwrite( &blocks[inodeList[dir[i].inode].blocks[block_index]], num_bytes, 1, ofp ); 
+
+      // Reduce the amount of bytes remaining to copy, increase the offset into the file
+      // and increment the block_index to move us to the next data block.
+      copy_size -= BLOCK_SIZE;
+      offset    += BLOCK_SIZE;
+      block_index ++;
+
+      // Since we've copied from the point pointed to by our current file pointer, increment
+      // offset number of bytes so we will be ready to copy to the next area of our output file.
+      fseek( ofp, offset, SEEK_SET );
+    }
+
+  //   // Close the output file, we're done. 
+     fclose( ofp );
+  }
+  // else
+  // {
+  //   printf("Unable to open file: %s\n", source );
+  //   perror("Opening the input file returned: ");
+  //   return -1;
+  // }
+//}
+
+
 int put(char *source)
 {
 
@@ -339,13 +435,15 @@ int main()
 
   // createfs("disk.image");
   open("disk.image");
-  put("lama.txt");
+ // put("lama.txt");
  // delete("testFile.txt");
  // attrib("-h","jackal.txt");
   // delete("lama.txt");
-  list();
+//  list();
 
- printf("Size = %ld\n",df());
+//  get("oregano.txt","gay.txt");
+
+// printf("Size = %ld\n",df());
   
   
 
