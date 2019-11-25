@@ -1,7 +1,11 @@
 
 /*
+
   Name: Nahian Alam
   ID: 1001552659
+
+
+
 */
 
 
@@ -19,7 +23,7 @@
 #define MAX_NUM_ARGUMENTS 5 // Mav shell only supports five arguments
 #define WHITESPACE " \t\n"
 
-FILE *fd;
+FILE *filePTR;
 
 uint8_t blocks[NUM_BLOCKS][BLOCK_SIZE];
 
@@ -192,13 +196,13 @@ void createfs(char *filename) // Used to create a file system
 {
   int i;
   memset(blocks, 0, NUM_BLOCKS * BLOCK_SIZE);
-  fd = fopen(filename, "w");
+  filePTR = fopen(filename, "w");
   intializeDirectory(); // Directories of the file system are initialzed.
   intializeInodeList(); // Inodelist is initialized
   intializeBlockList(); // Block list is initialized
   intializeInodes();    // Inodes are initialized
-  fwrite(blocks, BLOCK_SIZE, NUM_BLOCKS, fd);
-  fclose(fd);
+  fwrite(blocks, BLOCK_SIZE, NUM_BLOCKS, filePTR);
+  fclose(filePTR);
 }
 
 void open(char *filename) // file is opened
@@ -211,9 +215,9 @@ void open(char *filename) // file is opened
   if (status != -1)
   {
 
-    fd = fopen(filename, "r");
-    fread(blocks, BLOCK_SIZE, NUM_BLOCKS, fd);
-    fclose(fd);
+    filePTR = fopen(filename, "r");
+    fread(blocks, BLOCK_SIZE, NUM_BLOCKS, filePTR);
+    fclose(filePTR);
   }
   else
   {
@@ -315,9 +319,9 @@ void close(char *filename) // Function used to close the file that was opened.
 
   if (status != -1)
   {
-    fd = fopen(filename, "w");
-    fwrite(blocks, BLOCK_SIZE, NUM_BLOCKS, fd);
-    fclose(fd);
+    filePTR = fopen(filename, "w");
+    fwrite(blocks, BLOCK_SIZE, NUM_BLOCKS, filePTR);
+    fclose(filePTR);
     memset(blocks, 0, NUM_BLOCKS * BLOCK_SIZE);
   }
   else
