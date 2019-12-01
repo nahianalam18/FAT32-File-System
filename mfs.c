@@ -1,14 +1,3 @@
-
-/*
-
-  Name: Nahian Alam
-  ID: 1001552659
-
-
-
-*/
-
-
 #include <stdint.h>
 #include <sys/stat.h>
 #include <stdlib.h>
